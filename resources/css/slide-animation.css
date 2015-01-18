@@ -1,0 +1,27 @@
+
+.example-enter {
+    -webkit-transition-duration: .25s;
+    /* transition-duration: .25s; */
+    transition: transform .25s ease-in;
+    -webkit-transform: translate3d(-100%, 0, 1px);
+    transform: translate3d(-100%, 0, 0);
+}
+
+.example-enter.example-enter-active {
+    -webkit-transform: translate3d(0, 0, 1px);
+    transform: translate3d(0, 0, 0);
+}
+
+.example-leave {
+     -webkit-transition-duration: .25s;
+    transition-duration: .25s;
+    -webkit-transform: translate3d(0, 0, 1px);
+    transform: translate3d(0, 0, 0)
+}
+
+.example-leave.example-leave-active {
+    -webkit-transform: translate3d(-100%, 0, 1px);
+    transform: translate3d(-100%, 0, 0);
+}
+
+
