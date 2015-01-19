@@ -10,49 +10,34 @@
 
 (def ctg (aget js/React "addons" "CSSTransitionGroup"))
 
-(defonce app-state (atom {:text "你好世界 from Om"
-                          :test ["testing"]
-                          :view :tours
-                          :tours [{
-                                   :title "耶路撒冷旧城"
-                                   :id "old-town"
-                                   :image "img/via-dolorosa.jpg"
-                                   :length ""
-                                   :audiofile ""
-                                   :coords {:lat 4 :lon 5}}
+(defonce app-state (atom {:title "Pageslider"                          
+                          :view :home
+                          :pages [{
+                                   :title "Page 1"
+                                   :id "one"
+                                   :class "page1"
+                                   :type :employee
+                                   :image "images/avatar.png"
+                                   :name "Susan Smith"}
                                   {
-                                   :title "維亞多勒羅沙"
-                                   :id "via-dolorosa"
-                                   :image "img/via-dolorosa.jpg"
-                                   :length ""
-                                   :audiofile ""
-                                   :coords {:lat 4 :lon 5}}
-                                  {
-                                   :title "橄榄山"
-                                   :id "mount-of-olives"
-                                   :image "img/via-dolorosa.jpg"
-                                   :length ""
-                                   :audiofile ""
-                                   :coords {:lat 4 :lon 5}}]}))
-
+                                   :title "Page 2"
+                                   :id "two"
+                                   :class "page2"
+                                   :type :logo
+                                   :image "images/react.png"}
+                                  ]}))
 
 (defn define-routes [data]
   
-  (defroute "/tours" {:as params}
-    (om/update! data :view :tours))
+  (defroute "/home" {:as params}
+    (om/update! data :view :home))
   
-  (defroute tour-path "/tours/:id" [id]
+  (defroute "/pages/:id" [id]
     (om/update! data :view id)))
 
-(defn online? [data]
-  (let [network-state (.. js/window -navigator -connection -type)]
-    (.dir js/console (.-navigator js/window))
-    (om/update! data :model (. js/device -model))
-    (om/transact! data :status #(str network-state))
-    (println network-state)))
 
 (defn header
-  "Om component for new header"
+  "Om component for header"
   [data owner]
   (reify
     om/IDisplayName
@@ -60,12 +45,15 @@
       "header")
     om/IRender
     (render [_]
-      (dom/header #js {:className "header bar bar-nav"}
-                  (dom/a {:href "#" :className "icon icon-left-nav pull-left"})
-                  (dom/h1 {:className "title"} "Pageslider")))))
+      (dom/header #js {:className "bar bar-nav"}
+                  (when (:id data) (dom/a #js {:href "#"
+                                               :className "icon icon-left-nav pull-left"
+                                               :onClick #(secretary/dispatch! "/home")}))
+                  (dom/h1 #js {:className "title"} (:title data))))))
 
-(defn tour-item
-  "Om component for new tour-item"
+
+(defn employee
+  "Om component for employee page"
   [data owner]
   (reify
     om/IDisplayName
@@ -73,14 +61,40 @@
       "tour-item")
     om/IRender
     (render [_]
-      (dom/div nil
-               (dom/button #js {:onClick #(secretary/dispatch! "/tours")} "Back")
-               (dom/p nil (:title data))
-               (dom/div nil
-                        (dom/img #js {:src (:image data) :width "100%"}))))))
+      (dom/div #js {:className (str "page " (:class data))}
+               (om/build header data)
+               (dom/div #js {:className "content"}
+                        (dom/div #js {:className "card"}
+                                 (dom/ul #js {:className "table-view"}
+                                         (dom/li #js {:className "table-view-cell media"}
+                                                 (dom/a nil (dom/img #js {:className "media-object pull-left"
+                                                                          :src (:image data)})
+                                                        (dom/div {:className "media-body"} (:name data)))))))))))
 
-(defn tours-view-item
-  "Om component for new tour-item"
+(defn logo
+  "Om component for logo page"
+  [data owner]
+  (reify
+    om/IDisplayName
+    (display-name [this]
+      "tour-item")
+    om/IRender
+    (render [_]
+      (dom/div #js {:className (str "page " (:class data))}
+               (om/build header data)
+               (dom/div #js {:className "content"}
+                        (dom/img #js {:src (:image data)}))))))
+
+(defmulti page (fn [data _] (:type data)))
+
+(defmethod page :employee
+  [data owner] (employee data owner))
+
+(defmethod page :logo
+  [data owner] (logo data owner))
+
+(defn page-list-item
+  "Om component for list item"
   [data owner]
   (reify
     om/IDisplayName
@@ -88,64 +102,40 @@
       "tours-view-item")
     om/IRender
     (render [_]
-      (dom/li #js {:className "table-view-cell media"}
-              (dom/button #js {:onClick #(secretary/dispatch! (str "/tours/" (:id data)))} (:title data)) ))))
+      (dom/li #js {:className "table-view-cell media"
+                   :onClick #(secretary/dispatch! (str "/pages/" (:id data)))
+                   :style #js {:cursor "pointer"}}
+              (:title data) ))))
 
-(defn tours-view
-  "Om component for new list-view"
+(defn pages
+  "Om component for pages"
   [data owner]
   (reify
     om/IDisplayName
     (display-name [this]
-      "tours-view")
+      "pages")
     om/IRender
     (render [_]
-      (apply dom/ul #js {:className "table-view"}
-              (om/build-all tours-view-item data {:key :id})))))
+      (dom/div #js {:className "page"}
+               (om/build header data)
+               (dom/div #js {:className "content"}
+                        (apply dom/ul #js {:className "table-view"}
+                               (om/build-all page-list-item (:pages data) {:key :id})))))))
 
-
-(defn transition-group
-  [opts component]
-  (let [[group-name enter? leave?] (if (map? opts)
-                                     [(:name opts) (:enter opts) (:leave opts)]
-                                     [opts true true])]
-    (ctg
-      #js {:transitionName group-name
-           :transitionEnter enter?
-           :transitionLeave leave?}
-      component)))
-
-(defn article
-  "Om component for new article"
+(defn home
+  "Om component home"
   [data owner]
   (reify
     om/IDisplayName
     (display-name [this]
-      "article")
+      "home")
     om/IRender
     (render [_]
-      (dom/article #js {:className "article content"}
-                   (let [view (:view data)]
-                     (transition-group "example"
-                                       (condp = view
-                                         :tours (om/build tours-view (:tours data))
-                                         (om/build tour-item (some #(when (= (:id %) view) %) (:tours data)) {:key :id}))))))))
-
-(defn footer
-  "Om component for new footer"
-  [data owner]
-  (reify
-    om/IDisplayName
-    (display-name [this]
-      "footer")
-    om/IRender
-    (render [_]
-      (dom/footer #js {:className "footer"}
-                  (dom/p nil (:text data))                 
-                  (dom/p nil (:model data))
-                  (dom/p nil (:status data))
-                  (dom/p nil (.-userAgent (.-navigator js/window)))
-                  (dom/button #js {:onClick (fn [e] (online? data))} "Status")))))
+      (let [view (:view data)]
+        (ctg #js {:transitionName "example"}
+             (condp = view
+               :home (om/build pages data)
+               (om/build page (some #(when (= (:id %) view) %) (:pages data)) {:key :id})))))))
 
 (defn app [data owner]
   (reify
@@ -153,19 +143,9 @@
     (will-mount [_]
       (define-routes data)
       (.initializeTouchEvents js/React true))
-     om/IDidMount
-     (did-mount [_]
-       (let [chan (listen js/document "deviceready")]
-         (go
-           (let [e (<! chan)]
-             (online? data)
-             (println (.-type e))))))
     om/IRender
     (render [this]
-      (dom/div #js {:className "container"}
-               (om/build header data)
-               (om/build article data)
-               (om/build footer data)))))
+      (om/build home data))))
 
 (om/root app app-state
          {:target (by-id "container")})
