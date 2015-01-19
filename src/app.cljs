@@ -35,7 +35,6 @@
   (defroute "/pages/:id" [id]
     (om/update! data :view id)))
 
-
 (defn header
   "Om component for header"
   [data owner]
@@ -50,7 +49,6 @@
                                                :className "icon icon-left-nav pull-left"
                                                :onClick #(secretary/dispatch! "/home")}))
                   (dom/h1 #js {:className "title"} (:title data))))))
-
 
 (defn employee
   "Om component for employee page"
@@ -132,7 +130,7 @@
     om/IRender
     (render [_]
       (let [view (:view data)]
-        (ctg #js {:transitionName "example"}
+        (ctg #js {:transitionName "slider"}
              (condp = view
                :home (om/build pages data)
                (om/build page (some #(when (= (:id %) view) %) (:pages data)) {:key :id})))))))

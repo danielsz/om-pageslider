@@ -1,25 +1,24 @@
 
-.example-enter {
+.slider-enter {
     -webkit-transition-duration: .25s;
-    /* transition-duration: .25s; */
-    transition: transform .25s ease-in;
+     transition-duration: .25s; 
     -webkit-transform: translate3d(100%, 0, 1px);
     transform: translate3d(100%, 0, 0);
 }
 
-.example-enter.example-enter-active {
+.slider-enter.slider-enter-active {
     -webkit-transform: translate3d(0, 0, 1px);
     transform: translate3d(0, 0, 0);
 }
 
-.example-leave {
+.slider-leave {
      -webkit-transition-duration: .25s;
     transition-duration: .25s;
     -webkit-transform: translate3d(0, 0, 1px);
     transform: translate3d(0, 0, 0)
 }
 
-.example-leave.example-leave-active {
+.slider-leave.slider-leave-active {
     -webkit-transform: translate3d(100%, 0, 1px);
     transform: translate3d(100%, 0, 0);
 }
