@@ -1,0 +1,18 @@
+* Pageslider 
+
+** What is it?
+Companion code to the blog post, [[http://danielsz.github.io/2015/01/21/Om-in-the-Real-World,-A-Case-Study/][Om in the Real World, A Case Study]].  
+
+** How to use?
+
+In development:
+#+BEGIN_SRC clojure
+(boot build-dev)
+#+END_SRC
+
+In production:
+#+BEGIN_SRC clojure
+(boot build-prod)
+#+END_SRC
+
+This project uses the [[http://boot-clj.com/][boot-clj]] build too.
