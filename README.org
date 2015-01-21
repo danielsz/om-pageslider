@@ -15,4 +15,6 @@ In production:
 (boot build-prod)
 #+END_SRC
 
-This project uses the [[http://boot-clj.com/][boot-clj]] build too.
+Compiled artefacts will reside in the *target* folder. 
+
+This project uses the [[http://boot-clj.com/][boot-clj]] build tool.
