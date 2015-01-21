@@ -10,7 +10,7 @@
 
 (def ctg (aget js/React "addons" "CSSTransitionGroup"))
 
-(defonce app-state (atom {:title "Pageslider"                          
+(defonce app-state (atom {:title "PageSlider"
                           :view :home
                           :pages [{
                                    :title "Page 1"
