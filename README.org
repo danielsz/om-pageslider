@@ -1,7 +1,7 @@
 * Pageslider 
 
 ** What is it?
-Companion code to the blog post, [[http://danielsz.github.io/2015/01/21/Om-in-the-Real-World,-A-Case-Study/][Om in the Real World, A Case Study]].  
+Companion code to the blog post, [[http://danielsz.github.io/2015/01/21/Om-in-the-Real-World,-A-Case-Study][Om in the Real World, A Case Study]].  
 
 ** How to use?
 
